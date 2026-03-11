@@ -21,6 +21,9 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService oAuth2UserService;
 
+    @Value("${FRONTEND_URL:http://localhost:5173}")
+    private String frontendUrl;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -37,7 +40,7 @@ public class SecurityConfig {
             )
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
-                .defaultSuccessUrl("http://localhost:5173/", true)
+                .defaultSuccessUrl(frontendUrl + "/", true)
             )
             .logout(logout -> logout
                 .logoutSuccessHandler((request, response, authentication) -> {
@@ -54,7 +57,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173", frontendUrl)));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
         configuration.setAllowCredentials(true);
